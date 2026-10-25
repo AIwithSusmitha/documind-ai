@@ -1,0 +1,20 @@
+
+SAMPLE BUSINESS REPORT
+Quarterly Sales Performance
+
+Overview:
+The company reviewed sales performance for the first quarter.
+
+Key Findings:
+- Total reported sales were Rs. 12,50,000.
+- The South region contributed 35 percent of reported sales.
+- Online sales increased by 18 percent compared with the previous quarter.
+- The electronics category recorded the highest revenue.
+
+Recommendations:
+- Review inventory for high-demand electronics products.
+- Investigate the performance of lower-performing regions.
+- Continue monitoring online sales trends.
+
+Note:
+This is fictional sample data created for testing the DocuMind AI application.

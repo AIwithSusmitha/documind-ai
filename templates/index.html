@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#17142b">
+    <meta name="description" content="DocuMind AI analyzes PDF and text documents with AI-powered summaries, findings, and extracted data.">
+    <title>DocuMind AI | Intelligent Document Analysis</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='6') }}">
+
+    <script defer src="{{ url_for('static', filename='script.js', v='6') }}"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <a class="brand" href="/" aria-label="DocuMind AI home">
+                <span class="brand-mark" aria-hidden="true">D</span>
+                <span class="brand-copy">
+                    <span class="brand-name">DocuMind <span>AI</span></span>
+                    <span class="brand-tagline">INTELLIGENT DOCUMENT ANALYSIS</span>
+                </span>
+            </a>
+
+            <div class="topbar-status">
+                <span class="status-dot" aria-hidden="true"></span>
+                <span>AI workspace</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="hero">
+                <div class="eyebrow"><span aria-hidden="true">✦</span> YOUR DOCUMENT, UNDERSTOOD</div>
+                <h1>Turn documents into <span>clear insights.</span></h1>
+                <p class="hero-description">
+                    Upload a document and let DocuMind AI summarize the content,
+                    identify important findings, and organize key information.
+                </p>
+            </section>
+
+            <section class="workspace-grid" aria-label="Document analysis workspace">
+                <aside class="panel upload-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <p class="section-kicker">STEP 01</p>
+                            <h2>Choose a document</h2>
+                        </div>
+                        <span class="step-icon" aria-hidden="true">↥</span>
+                    </div>
+
+                    <form id="analysisForm" enctype="multipart/form-data">
+                        <label class="field-label" for="document">Upload file</label>
+
+                        <div id="dropZone" class="drop-zone" role="button" tabindex="0"
+                             aria-label="Choose or drop a PDF or TXT document">
+                            <input
+                                type="file"
+                                id="document"
+                                name="document"
+                                accept=".pdf,.txt,application/pdf,text/plain"
+                                hidden
+                            >
+                            <div class="upload-icon" aria-hidden="true">
+                                <svg viewBox="0 0 48 48" fill="none">
+                                    <path d="M24 31V8m0 0L15 17m9-9 9 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M10 28v9a4 4 0 0 0 4 4h20a4 4 0 0 0 4-4v-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <p class="drop-title">Drop your file here</p>
+                            <p class="drop-subtitle">or <span>browse files</span></p>
+                            <p class="file-types">PDF or TXT · Maximum 10 MB</p>
+                            <p id="fileName" class="selected-file" aria-live="polite">No file selected</p>
+                        </div>
+
+                        <div class="sample-section">
+                            <label class="field-label" for="sampleName">Or try a sample document</label>
+                            <select id="sampleName" name="sampleName">
+                                <option value="">Choose a sample...</option>
+                            </select>
+                            <p class="field-help">Samples help you test the app without uploading your own file.</p>
+                        </div>
+
+                        <div class="form-divider"></div>
+
+                        <div class="field-group">
+                            <p class="field-label">Document type</p>
+                            <p class="field-help">Resume analysis is optimized for extracting contact details, skills, education, work history, and projects.</p>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label" for="analysisLevel">Analysis depth</label>
+                            <select id="analysisLevel" name="analysisLevel">
+                                <option value="basic">Basic</option>
+                                <option value="standard" selected>Standard</option>
+                                <option value="detailed">Detailed</option>
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label" for="summaryStyle">Summary style</label>
+                            <select id="summaryStyle" name="summaryStyle">
+                                <option value="brief">Brief</option>
+                                <option value="detailed">Detailed</option>
+                                <option value="bullets" selected>Bullet points</option>
+                            </select>
+                        </div>
+
+                        <fieldset class="field-group focus-fields">
+                            <legend class="field-label">Focus on resume fields</legend>
+                            <p class="field-help">Only selected fields are returned. Leave all unchecked to analyze every field.</p>
+                            <div class="focus-options">
+                                <label><input type="checkbox" name="focusFields" value="name" checked> Name and email</label>
+                                <label><input type="checkbox" name="focusFields" value="skills" checked> Skills</label>
+                                <label><input type="checkbox" name="focusFields" value="education" checked> Education</label>
+                                <label><input type="checkbox" name="focusFields" value="experience" checked> Work experience</label>
+                                <label><input type="checkbox" name="focusFields" value="projects" checked> Projects</label>
+                            </div>
+                        </fieldset>
+
+                        <div id="statusMessage" class="status-message" role="status" aria-live="polite"></div>
+
+                        <button type="submit" id="analyzeButton" class="button button-primary button-full">
+                            <span class="button-icon" aria-hidden="true">✦</span>
+                            <span>Analyze document</span>
+                        </button>
+                        <p class="privacy-note">Your document is processed for this analysis. Review results before relying on them.</p>
+                    </form>
+                </aside>
+
+                <section class="panel results-panel" id="results" aria-live="polite">
+                    <div class="results-header">
+                        <div>
+                            <p class="section-kicker">STEP 02</p>
+                            <h2>Analysis results</h2>
+                        </div>
+                        <span class="results-badge"><span class="status-dot"></span> Ready when you are</span>
+                    </div>
+
+                    <div id="emptyState" class="empty-state">
+                        <div class="empty-illustration" aria-hidden="true">
+                            <div class="paper paper-back"></div>
+                            <div class="paper paper-front">
+                                <span></span><span></span><span></span>
+                                <div class="paper-sparkle">✦</div>
+                            </div>
+                        </div>
+                        <h3>Your insights will appear here</h3>
+                        <p>Choose a document and click <strong>Analyze document</strong> to generate a summary, findings, and structured data.</p>
+                        <div class="empty-features">
+                            <span><span aria-hidden="true">✓</span> AI summary</span>
+                            <span><span aria-hidden="true">✓</span> Key findings</span>
+                            <span><span aria-hidden="true">✓</span> Extracted data</span>
+                        </div>
+                    </div>
+
+                    <div id="resultsContent" class="results-content" hidden>
+                        <div class="analysis-document-header">
+                            <div class="document-avatar" aria-hidden="true">PDF</div>
+                            <div class="document-heading-text">
+                                <h3 id="resultFilename">Analyzed document</h3>
+                                <p id="resultMeta">AI analysis completed</p>
+                            </div>
+                            <button type="button" id="newAnalysis" class="button button-secondary button-small">
+                                New analysis
+                            </button>
+                        </div>
+
+                        <section class="result-card summary-card">
+                            <div class="result-card-heading">
+                                <span class="result-icon summary-icon" aria-hidden="true">✦</span>
+                                <h3>Executive summary</h3>
+                            </div>
+                            <div id="summaryContent" class="result-body">
+                                <p>Your document summary will appear here.</p>
+                            </div>
+                        </section>
+
+                        <section class="result-card">
+                            <div class="result-card-heading">
+                                <span class="result-icon findings-icon" aria-hidden="true">◎</span>
+                                <h3>Key findings</h3>
+                            </div>
+                            <div id="keyFindings" class="result-body">
+                                <p>Key findings will appear here.</p>
+                            </div>
+                        </section>
+
+                        <section class="result-card">
+                            <div class="result-card-heading">
+                                <span class="result-icon details-icon" aria-hidden="true">▤</span>
+                                <h3>Important details</h3>
+                            </div>
+                            <div id="importantDetails" class="result-body">
+                                <p>Important details will appear here.</p>
+                            </div>
+                        </section>
+
+                        <section class="result-card">
+                            <div class="result-card-heading">
+                                <span class="result-icon data-icon" aria-hidden="true">{ }</span>
+                                <h3>Extracted data</h3>
+                            </div>
+                            <p class="field-help">Review and edit extracted fields. For lists, enter one item per line; the saved JSON keeps them structured.</p>
+                            <div id="extractedData" class="extracted-data">
+                                <p>Extracted data will appear here.</p>
+                            </div>
+                            <div class="result-actions">
+                                <button type="button" id="saveEdits" class="button button-secondary">
+                                    Save edits
+                                </button>
+                            </div>
+                        </section>
+
+                        <section class="result-card">
+                            <div class="result-card-heading">
+                                <span class="result-icon completeness-icon" aria-hidden="true">✓</span>
+                                <h3>Completeness check</h3>
+                            </div>
+                            <div id="completenessContent" class="result-body">
+                                <p>Completeness information will appear here.</p>
+                            </div>
+                        </section>
+
+                        <section class="result-card">
+                            <div class="result-card-heading">
+                                <span class="result-icon chart-icon" aria-hidden="true">▥</span>
+                                <h3>Visual insights</h3>
+                            </div>
+                            <div class="chart-container">
+                                <div id="insightsChart" class="chart-graphic" role="img" aria-label="Chart showing the number of extracted resume details"></div>
+                            </div>
+                            <p class="chart-note">Charts visualize selected information returned by the analysis. They do not independently verify the document.</p>
+                        </section>
+
+                        <section class="result-card">
+                            <div class="result-card-heading">
+                                <span class="result-icon uncertainty-icon" aria-hidden="true">!</span>
+                                <h3>Uncertainties and review notes</h3>
+                            </div>
+                            <div id="uncertaintiesContent" class="result-body">
+                                <p>Any uncertainty or review notes will appear here.</p>
+                            </div>
+                        </section>
+
+                        <section class="result-card" id="recommendationsCard">
+                            <div class="result-card-heading">
+                                <span class="result-icon recommendations-icon" aria-hidden="true">↗</span>
+                                <h3>Recommendations</h3>
+                            </div>
+                            <div id="recommendationsContent" class="result-body">
+                                <p>Recommendations will appear here when applicable.</p>
+                            </div>
+                        </section>
+
+                        <div class="export-panel">
+                            <div>
+                                <h3>Take your results with you</h3>
+                                <p>Export this analysis for your records.</p>
+                            </div>
+                            <div class="export-actions">
+                                <button type="button" id="downloadJson" class="button button-secondary">
+                                    Download JSON
+                                </button>
+                                <button type="button" id="downloadPdf" class="button button-primary">
+                                    Download PDF report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <section class="disclaimer">
+                <span aria-hidden="true">ⓘ</span>
+                <p><strong>AI-generated content:</strong> Results may contain errors or omissions. Verify important details against the original document before making decisions.</p>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <span>© <span id="currentYear">2026</span> DocuMind AI</span>
+            <span>Built for clearer document understanding</span>
+        </footer>
+    </div>
+
+    <script>
+        // Small progressive enhancement; the main application logic is in static/script.js.
+        document.getElementById("currentYear").textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

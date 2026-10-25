@@ -1,0 +1,27 @@
+
+SAMPLE RESUME
+
+Name: Priya Sharma
+Email: priya.sharma@example.com
+
+Professional Summary:
+Computer Science student interested in data analytics and software
+development. Experienced in academic projects and data visualization.
+
+Skills:
+Python, SQL, Excel, Power BI, HTML, CSS, JavaScript, Data Analysis.
+
+Education:
+Bachelor of Engineering in Computer Science
+ABC Institute of Technology
+Expected Graduation: 2027
+
+Projects:
+1. Sales Analysis Dashboard
+   Built a dashboard to explore sales trends and product performance.
+
+2. Student Performance Analysis
+   Analyzed academic data and visualized performance patterns.
+
+Work Experience:
+No formal work experience listed.
